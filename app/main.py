@@ -41,3 +41,24 @@ def iniciar_aluguel(aluguel: schemas.AluguelIniciar, db: Session = Depends(get_d
     db.commit()
     db.refresh(veiculo)
     return veiculo
+
+@app.post("/telemetria")
+def registrar_telemetria(telemetria: schemas.TelemetriaCreate, db: Session = Depends(get_db)):
+    veiculo = db.query(models.Veiculo).filter(models.Veiculo.id == telemetria.veiculo_id).first()
+    
+    if not veiculo:
+        raise HTTPException(status_code=404, detail="Veículo não encotrado")
+    
+    nova_telemetria = models.Telemetria(
+        veiculo_id=telemetria.veiculo_id,
+        latitude=telemetria.latitude,
+        longitude=telemetria.longitude,
+        quilometragem=telemetria.quilometragem,
+        registrado_em=datetime.now()
+    )
+    db.add(nova_telemetria)
+    veiculo.quilometragem_atual = telemetria.quilometragem
+    
+    db.commit()
+    db.refresh(nova_telemetria)
+    return nova_telemetria
