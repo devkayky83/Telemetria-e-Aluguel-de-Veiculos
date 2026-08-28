@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, DateTime
 from app.database import Base
 
 class Veiculo(Base):
@@ -8,4 +8,4 @@ class Veiculo(Base):
     modelo = Column(String, nullable=False)
     placa = Column(String, unique=True, index=True, nullable=False)
     status = Column(String, default="disponível")
-    
+    hora_inicio_aluguel = Column(DateTime, nullable=True)

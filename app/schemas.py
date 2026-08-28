@@ -5,3 +5,5 @@ class VeiculoCreate(BaseModel):
     placa: str
     status: str = "disponível"
     
+class AluguelIniciar(BaseModel):
+    veiculo_id: int
