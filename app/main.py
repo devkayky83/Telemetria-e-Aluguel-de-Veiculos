@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 from app.database import engine, Base, get_db
 from app import models, schemas
+from typing import List
 
 Base.metadata.create_all(bind=engine)   
 
@@ -11,6 +12,19 @@ app = FastAPI(title="API de Telemetria e Aluguel de Veículos")
 @app.get("/")
 def read_root():
     return {"status": "API no ar"}
+
+@app.get("/veiculos", response_model=List[schemas.VeiculoOut])
+def listar_veiculos(db: Session = Depends(get_db)):
+    return db.query(models.Veiculo).all()
+
+@app.get("/veiculos/{veiculo_id}/telemetria", response_model=List[schemas.TelemetriaOut])
+def listar_telemetria(veiculo_id: int, db: Session = Depends(get_db)):
+    veiculo = db.query(models.Veiculo).filter(models.Veiculo.id == veiculo_id).first()
+    
+    if not veiculo:
+        raise HTTPException(status_code=404, detail="Veículo não encontrado")
+    
+    return veiculo.telemetrias
 
 @app.post("/veiculos")
 def criar_veiculo(veiculo: schemas.VeiculoCreate, db: Session = Depends(get_db)):
