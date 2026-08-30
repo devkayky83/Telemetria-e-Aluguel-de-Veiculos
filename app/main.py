@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from datetime import datetime
 from app.database import engine, Base, get_db
@@ -8,6 +9,13 @@ from typing import List
 Base.metadata.create_all(bind=engine)   
 
 app = FastAPI(title="API de Telemetria e Aluguel de Veículos")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 @app.get("/")
 def read_root():

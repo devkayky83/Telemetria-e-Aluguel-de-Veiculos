@@ -1,0 +1,11 @@
+body {
+    font-family: sans-serif;
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+input { margin-right: 8px; padding: 6px }
+button { padding: 6px 12px; cursor: pointer; }
+table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+th, td { border: 1px solid #CCCCCC; padding: 8px; text-align: left; }
