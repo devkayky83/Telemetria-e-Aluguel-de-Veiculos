@@ -1,37 +1,25 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
-    <title>Frota de Veículos</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="menu-style.css">
+    <title>Menu Principal</title>
 </head>
+
 <body>
-    <h1>Painel da Frota</h1>
+    <h1>AlphaCars</h1>
+    <p>Bem-vindo à nossa aplicação de aluguel de veículos!</p>
 
-    <section>
-        <h2>Cadastrar Veículo</h2>
-        <input type="text" id="input-modelo" placeholder="Modelo (Ex: Fiat Uno)">
-        <input type="text" id="input-placa" placeholder="Placa (Ex: ABC-1234)">
-        <button onclick="cadastrarVeiculo()">Cadastrar</button>
+    <section class="menu">
+        <h2>Menu</h2>
+        <ul>
+            <li><a href="listar_veiculos.html">Listar Veículos</a></li>
+            <li><a href="adicionar_veiculos.html">Adicionar Veículo</a></li>
+            <li><a href="alugar_veiculos.html">Alugar Veículo</a></li>
+            <li><a href="devolver_veiculo.html">Devolver Veículo</a></li>
+        </ul>
     </section>
-
-    <section>
-        <h2>Veículos</h2>
-        <table id="tabela-veiculos">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Modelo</th>
-                    <th>Placa</th>
-                    <th>Status</th>
-                    <th>KM Atual</th>
-                </tr>
-            </thead>
-            <tbody id="corpo-tabela-veiculos">
-            </tbody>
-        </table>   
-    </section>
-
-    <script src="script.js"></script>
 </body>
+
 </html>

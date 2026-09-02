@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <title>Painel da Frota</title>
+</head>
+
+<body>
+
+    <section>
+        <input type="text" id="input-modelo" placeholder="Modelo (Ex: Fiat Uno)">
+        <select id="select-status">
+            <option value="disponível" selected>Disponível</option>
+            <option value="alugado">Alugado</option>
+        </select>
+        <button onclick="filtrarVeiculos()">Filtrar</button>
+    </section>
+
+    <section>
+        <h1>Veículos</h1>
+        <table id="tabela-veiculos">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Modelo</th>
+                    <th>Placa</th>
+                    <th>Status</th>
+                    <th>KM Atual</th>
+                </tr>
+            </thead>
+            <tbody id="corpo-tabela-veiculos">
+            </tbody>
+        </table>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

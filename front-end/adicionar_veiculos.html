@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Frota de Veículos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Painel da Frota</h1>
+
+    <section>
+        <h2>Cadastrar Veículo</h2>
+        <input type="text" id="input-modelo" placeholder="Modelo (Ex: Fiat Uno)">
+        <input type="text" id="input-placa" placeholder="Placa (Ex: ABC-1234)">
+        <button onclick="cadastrarVeiculo()">Cadastrar</button>
+    </section>
+
+    <section>
+        <h2>Veículos</h2>
+        <table id="tabela-veiculos">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Modelo</th>
+                    <th>Placa</th>
+                    <th>Status</th>
+                    <th>KM Atual</th>
+                </tr>
+            </thead>
+            <tbody id="corpo-tabela-veiculos">
+            </tbody>
+        </table>   
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>

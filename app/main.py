@@ -54,8 +54,8 @@ def iniciar_aluguel(aluguel: schemas.AluguelIniciar, db: Session = Depends(get_d
     if not veiculo:
         raise HTTPException(status_code=404, detail="Veículo não encontrado")
     
-    if veiculo.status == "alugado":
-        raise HTTPException(status_code=400, detail="Veículo já alugado")
+    if veiculo.status.lower() != "disponível":
+        raise HTTPException(status_code=400, detail="Veículo não está disponível para aluguel")
     
     veiculo.status = "alugado"
     veiculo.hora_inicio_aluguel = datetime.now()
