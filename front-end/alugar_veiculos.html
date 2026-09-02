@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <title>Alugar Veículo</title>
+</head>
+
+<body>
+    <h1>Modelo desejado:</h1>
+
+    <section>
+        <input type="text" id="input-modelo" placeholder="Modelo (Ex: Fiat Uno)">
+        <button onclick="renderAluguel()">Filtrar</button>
+    </section>
+
+    <section>
+        <h2>Veículos Disponíveis</h2>
+        <table id="tabela-veiculos">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Modelo</th>
+                    <th>Placa</th>
+                    <th>Status</th>
+                    <th>KM Atual</th>
+                </tr>
+            </thead>
+            <tbody id="corpo-tabela-veiculos">
+            </tbody>
+        </table>
+    </section>
+</body>
+
+<script src="script.js"></script>
+</html>
