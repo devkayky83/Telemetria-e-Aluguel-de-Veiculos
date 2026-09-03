@@ -34,6 +34,17 @@ def listar_telemetria(veiculo_id: int, db: Session = Depends(get_db)):
     
     return veiculo.telemetrias
 
+@app.get("/telemetria", response_model=List[schemas.TelemetriaOut])
+def listar_telemetria_por_modelo(modelo: str, db: Session = Depends(get_db)):
+    veiculo = db.query(models.Veiculo).filter(
+        models.Veiculo.modelo.ilike(modelo)
+    ).first()
+
+    if not veiculo:
+        raise HTTPException(status_code=404, detail="Veículo não encontrado")
+
+    return veiculo.telemetrias
+
 @app.post("/veiculos")
 def criar_veiculo(veiculo: schemas.VeiculoCreate, db: Session = Depends(get_db)):
     novo_veiculo = models.Veiculo(

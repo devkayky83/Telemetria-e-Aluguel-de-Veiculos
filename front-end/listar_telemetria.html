@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <title>Telemetrias</title>
+</head>
+
+<body>
+    <h1>Painel de Telemetrias</h1>
+
+    <section>
+        <input type="text" id="input-veiculo" placeholder="Veículo (Ex: Fiat Uno)">
+        <button onclick="carregarTelemetria()">Buscar</button>
+    </section>
+
+    <table id="tabela-telemetria">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Veículo</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+                <th>Quilometragem</th>
+                <th>Data de Registro</th>
+            </tr>
+        </thead>
+        <tbody id="corpo-tabela-telemetria">
+        </tbody>
+    </table>
+</body>
+
+<script src="script.js"></script>
+
+</html>
