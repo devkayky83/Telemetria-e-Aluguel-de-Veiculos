@@ -1,15 +1,24 @@
 const API_URL = "http://127.0.0.1:8000";
 
-let veiculosCache = [];
+let veiculosCache = []; // Cache para armazenar os veículos carregados
 
 async function carregarVeiculos() {
   const resposta = await fetch(`${API_URL}/veiculos`);
   const veiculos = await resposta.json();
 
   veiculosCache = veiculos;
-  renderAluguel();
+  if (document.querySelector("#corpo-tabela-veiculos")) {
+    renderAluguel();
+  }
 
   const corpoTabela = document.querySelector("#tabela-veiculos tbody");
+  if (!corpoTabela) {
+    if (document.querySelector("#corpo-tabela-alugados")) {
+      filtrarVeiculosAlugados();
+    }
+    return;
+  }
+
   corpoTabela.innerHTML = "";
 
   veiculos.forEach((veiculo) => {
@@ -81,6 +90,67 @@ function filtrarVeiculos() {
   if (visiveis === 0) {
     document.querySelector("#corpo-tabela-veiculos").innerHTML =
       "<tr><td colspan='5'>Nenhum veículo encontrado</td></tr>";
+  }
+}
+
+function filtrarVeiculosAlugados() {
+  const filtro = document
+    .querySelector("#input-modelo")
+    .value.trim()
+    .toLowerCase();
+  const tbody = document.querySelector("#corpo-tabela-alugados");
+  const veiculosAlugados = veiculosCache.filter((veiculo) => {
+    const modelo = (veiculo.modelo || "").toLowerCase();
+    const status = (veiculo.status || "").toLowerCase();
+
+    return modelo.includes(filtro) && status === "alugado";
+  });
+
+  tbody.innerHTML = "";
+
+  if (veiculosAlugados.length === 0) {
+    tbody.innerHTML =
+      "<tr><td colspan='6'>Nenhum veículo alugado encontrado</td></tr>";
+    return;
+  }
+
+  veiculosAlugados.forEach((veiculo) => {
+    const linha = document.createElement("tr");
+
+    linha.innerHTML = `
+        <td>${veiculo.id}</td>
+        <td>${veiculo.modelo}</td>
+        <td>${veiculo.placa}</td>
+        <td>${veiculo.status}</td>
+        <td>${veiculo.quilometragem_atual}</td>
+        <td><button onclick="devolverVeiculo(${veiculo.id})">Devolver</button></td>
+      `;
+    tbody.appendChild(linha);
+  });
+}
+
+async function devolverVeiculo(veiculoId) {
+  try {
+    const resposta = await fetch(`${API_URL}/devolver`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ veiculo_id: veiculoId }),
+    });
+
+    if (!resposta.ok) {
+      const erro = await resposta.json();
+      throw new Error(erro.detail || "Erro ao devolver veículo");
+    }
+
+    const veiculo = await resposta.json();
+    alert(`Veículo ${veiculo.modelo} devolvido com sucesso!`);
+    
+    veiculosCache = veiculosCache.map((item) =>
+      item.id === veiculo.id ? veiculo: item
+    );
+    filtrarVeiculosAlugados();
+  } catch (error) {
+    alert(error.message);
   }
 }
 
@@ -161,7 +231,10 @@ async function alugarVeiculo(veiculoId) {
   }
 }
 
-if (document.querySelector("#tabela-veiculos")) {
+if (
+  document.querySelector("#tabela-veiculos") ||
+  document.querySelector("#tabela-veiculos-alugados")
+) {
   carregarVeiculos();
 }
 
