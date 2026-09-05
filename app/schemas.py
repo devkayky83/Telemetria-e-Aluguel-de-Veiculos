@@ -39,3 +39,7 @@ class TelemetriaOut(BaseModel):
     
     class Config:
         from_attributes = True
+        
+
+class DevolucaoVeiculo(BaseModel):
+    veiculo_id: int
