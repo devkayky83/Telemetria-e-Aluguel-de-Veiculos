@@ -60,10 +60,9 @@ async function carregarTelemetria() {
 
   dados.forEach((telemetria) => {
     const linha = document.createElement("tr");
-    linha.dataset.modelo = modelo.toLowerCase();
     linha.innerHTML = `
             <td>${telemetria.id}</td>
-            <td>${modelo}</td>
+            <td>Veículo #${telemetria.veiculo_id}</td>
             <td>${telemetria.latitude}</td>
             <td>${telemetria.longitude}</td>
             <td>${telemetria.quilometragem}</td>
@@ -144,9 +143,9 @@ async function devolverVeiculo(veiculoId) {
 
     const veiculo = await resposta.json();
     alert(`Veículo ${veiculo.modelo} devolvido com sucesso!`);
-    
+
     veiculosCache = veiculosCache.map((item) =>
-      item.id === veiculo.id ? veiculo: item
+      item.id === veiculo.id ? veiculo : item,
     );
     filtrarVeiculosAlugados();
   } catch (error) {
@@ -198,11 +197,25 @@ async function cadastrarVeiculo() {
   const modelo = document.querySelector("#input-modelo").value;
   const placa = document.querySelector("#input-placa").value;
 
-  await fetch(`${API_URL}/veiculos`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ modelo, placa }),
-  });
+  try {
+    const resposta = await fetch(`${API_URL}/veiculos`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ modelo, placa }),
+    });
+
+    if (!resposta.ok) {
+      const erro = await resposta.json();
+      throw new Error(erro.detail || "Erro ao cadastrar veículo");
+    }
+
+    document.querySelector("#input-modelo").value = "";
+    document.querySelector("#input-placa").value = "";
+
+    carregarVeiculos();
+  } catch (error) {
+    alert(error.message);
+  }
 
   document.querySelector("#input-modelo").value = "";
   document.querySelector("#input-placa").value = "";

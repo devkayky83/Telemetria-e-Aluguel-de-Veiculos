@@ -1,11 +1,18 @@
 from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
+from enum import Enum
+
+
+class StatusVeiculo(str, Enum):
+    disponivel = "disponível"
+    alugado = "alugado"
+    manutencao = "manutenção"
 
 class VeiculoCreate(BaseModel):
     modelo: str
     placa: str
-    status: str = "disponível"
+    status: str = StatusVeiculo.disponivel
     
 class VeiculoOut(BaseModel):
     id: int
