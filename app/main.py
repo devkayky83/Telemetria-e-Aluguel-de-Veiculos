@@ -1,8 +1,8 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from datetime import datetime
-import random
 from app.database import engine, Base, get_db
 from app import models, schemas
 from typing import List
@@ -37,14 +37,20 @@ def listar_telemetria(veiculo_id: int, db: Session = Depends(get_db)):
 
 @app.get("/telemetria", response_model=List[schemas.TelemetriaOut])
 def listar_telemetria_por_modelo(modelo: str, db: Session = Depends(get_db)):
-    veiculo = db.query(models.Veiculo).filter(
-        models.Veiculo.modelo.ilike(modelo)
-    ).first()
-
-    if not veiculo:
-        raise HTTPException(status_code=404, detail="Veículo não encontrado")
-
-    return veiculo.telemetrias
+    veiculos = db.query(models.Veiculo).filter(
+        models.Veiculo.modelo.ilike(f"%{modelo}%")
+    ).all()
+    
+    if not veiculos:
+        raise HTTPException(status_code=404, detail="Nenhum veículo encontrado com o modelo especificado")
+    
+    veiculos_ids = [veiculo.id for veiculo in veiculos]
+    return (
+        db.query(models.Telemetria)
+        .filter(models.Telemetria.veiculo_id.in_(veiculos_ids))
+        .order_by(models.Telemetria.registrado_em.desc())
+        .all()
+    )
 
 @app.post("/veiculos")
 def criar_veiculo(veiculo: schemas.VeiculoCreate, db: Session = Depends(get_db)):
@@ -54,6 +60,12 @@ def criar_veiculo(veiculo: schemas.VeiculoCreate, db: Session = Depends(get_db))
         status=veiculo.status
     )
     db.add(novo_veiculo)
+    
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Veículo com essa placa já cadastrado")
     
     db.commit()
     db.refresh(novo_veiculo)
@@ -76,6 +88,32 @@ def iniciar_aluguel(aluguel: schemas.AluguelIniciar, db: Session = Depends(get_d
     db.refresh(veiculo)
     return veiculo
 
+
+@app.post("/telemetria", response_model=schemas.TelemetriaOut)
+def registrar_telemetria(telemetria: schemas.TelemetriaCreate, db: Session = Depends(get_db)):
+    veiculo = db.query(models.Veiculo).filter(models.Veiculo.id == telemetria.veiculo_id).first()
+    
+    if not veiculo:
+        raise HTTPException(status_code=404, detail="Veículo não encontrado")
+    
+    if veiculo.status.lower() != "alugado":
+        raise HTTPException(status_code=400, detail="Telemetria só pode ser registrada para veículos alugados")
+    
+    nova_telemetria = models.Telemetria(
+        veiculo_id=telemetria.veiculo_id,
+        latitude=telemetria.latitude,
+        longitude=telemetria.longitude,
+        quilometragem=telemetria.quilometragem,
+        registrado_em=datetime.now()
+    )
+    db.add(nova_telemetria)
+    veiculo.quilometragem_atual = round(telemetria.quilometragem, 2)
+    
+    db.commit()
+    db.refresh(nova_telemetria)
+    return nova_telemetria
+
+
 @app.post("/devolver")
 def devolver_veiculo(devolucao: schemas.DevolucaoVeiculo, db: Session = Depends(get_db)):
     veiculo = db.query(models.Veiculo).filter(models.Veiculo.id == devolucao.veiculo_id).first()
@@ -84,27 +122,8 @@ def devolver_veiculo(devolucao: schemas.DevolucaoVeiculo, db: Session = Depends(
         raise HTTPException(status_code=404, detail="Veículo não encontrado")
     
     if veiculo.status.lower() != "alugado":
-        raise HTTPException(status_code=404, detail="Este veículo não está alugado")
-
-    ultima_telemetria = db.query(models.Telemetria).filter(
-        models.Telemetria.veiculo_id == veiculo.id
-    ).order_by(models.Telemetria.registrado_em.desc()).first()
-
-    latitude_base = ultima_telemetria.latitude if ultima_telemetria else -23.5505
-    longitude_base = ultima_telemetria.longitude if ultima_telemetria else -46.6333
-    quilometragem = veiculo.quilometragem_atual + random.uniform(1, 50)
+        raise HTTPException(status_code=400, detail="Este veículo não está alugado")
     
-    nova_telemetria = models.Telemetria(
-        veiculo_id=veiculo.id,
-        latitude=latitude_base + random.uniform(-0.01, 0.01),
-        longitude=longitude_base + random.uniform(-0.01, 0.01),
-        quilometragem=quilometragem,
-        registrado_em=datetime.now()
-    )
-    
-    db.add(nova_telemetria)
-
-    veiculo.quilometragem_atual = f"{quilometragem:.2f}".replace(",", ".")  
     veiculo.status = "disponível"
     veiculo.hora_inicio_aluguel = None
 
