@@ -9,35 +9,43 @@
 </head>
 
 <body>
-    <h1>Painel da Frota</h1>
+    <div class="pagina">
+        <div class="cabecalho-pagina">
+            <a class="voltar" href="index.html">← Voltar ao painel</a>
+            <h1>Frota</h1>
+        </div>
 
-    <section>
-        <input type="text" id="input-modelo" placeholder="Modelo (Ex: Fiat Uno)">
-        <select id="select-status">
-            <option value="disponível" selected>Disponível</option>
-            <option value="alugado">Alugado</option>
-        </select>
-        <button onclick="filtrarVeiculos()">Filtrar</button>
-    </section>
+        <div class="painel">
+            <h2>Filtrar</h2>
+            <div class="form-linha">
+                <input type="text" id="input-modelo" placeholder="Modelo (Ex: Fiat Uno)">
+                <select id="select-status">
+                    <option value="disponível" selected>Disponível</option>
+                    <option value="alugado">Alugado</option>
+                    <option value="manutenção">Manutenção</option>
+                </select>
+                <button class="btn" onclick="filtrarVeiculos()">Filtrar</button>
+            </div>
+        </div>
 
-    <section>
-        <h1>Veículos</h1>
-        <table id="tabela-frota">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Modelo</th>
-                    <th>Placa</th>
-                    <th>Status</th>
-                    <th>KM Atual</th>
-                </tr>
-            </thead>
-            <tbody id="corpo-tabela-frota">
-            </tbody>
-        </table>
-    </section>
+        <div class="painel">
+            <h2>Veículos</h2>
+            <table id="tabela-frota">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Modelo</th>
+                        <th>Placa</th>
+                        <th>Status</th>
+                        <th>Km Atual</th>
+                    </tr>
+                </thead>
+                <tbody id="corpo-tabela-frota">
+                </tbody>
+            </table>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
-
 </html>
