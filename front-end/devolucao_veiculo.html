@@ -5,33 +5,43 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="theme.css">
     <link rel="stylesheet" href="style.css">
-    <title>Devolver Veículo Alugado</title>
+    <title>Devolver Veículo — AlphaCars</title>
 </head>
 
 <body>
-    <h1>Modelo desejado:</h1>
-    <section>
-        <input type="text" id="input-modelo" placeholder="Modelo (Ex: Fiat Uno)">
-        <button onclick="filtrarVeiculosAlugados()">Buscar</button>
-    </section>
+    <div class="pagina">
+        <div class="cabecalho-pagina">
+            <a class="voltar" href="index.html">← Voltar ao painel</a>
+            <h1>Devolver Veículo</h1>
+        </div>
 
-    <section>
-        <h2>Veículos Alugados</h2>
-        <table id="tabela-veiculos-alugados">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Modelo</th>
-                    <th>Placa</th>
-                    <th>Status</th>
-                    <th>KM Atual</th>
-                    <th>Ação</th>
-                </tr>
-            </thead>
-            <tbody id="corpo-tabela-alugados">
-            </tbody>
-        </table>
+        <div class="painel">
+            <h2>Buscar por modelo</h2>
+            <div class="form-linha">
+                <input type="text" id="input-modelo" placeholder="Modelo (Ex: Fiat Uno)">
+                <button class="btn btn-secundario" onclick="filtrarVeiculosAlugados()">Buscar</button>
+            </div>
+        </div>
+
+        <div class="painel">
+            <h2>Veículos alugados</h2>
+            <table id="tabela-veiculos-alugados">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Modelo</th>
+                        <th>Placa</th>
+                        <th>Status</th>
+                        <th>KM Atual</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="corpo-tabela-alugados">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
-
-<script src="script.js"></script>
 </html>

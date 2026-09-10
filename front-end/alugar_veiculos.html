@@ -9,30 +9,39 @@
 </head>
 
 <body>
-    <h1>Modelo desejado:</h1>
+    <div class="pagina">
+        <div class="cabecalho-pagina">
+            <a class="voltar" href="index.html">← Voltar ao painel</a>
+            <h1>Alugar Veículo</h1>
+        </div>
 
-    <section>
-        <input type="text" id="input-modelo" placeholder="Modelo (Ex: Fiat Uno)">
-        <button onclick="renderAluguel()">Filtrar</button>
-    </section>
+        <div class="painel">
+            <h2>Buscar Modelo</h2>
+            <div class="form-linha">
+                <input type="text" id="input-modelo" placeholder="Modelo (Ex: Fiat Uno)">
+                <button class="btn btn-secundario" onclick="renderAluguel">Filtrar</button>
+            </div>
+        </div>
 
-    <section>
-        <h2>Veículos Disponíveis</h2>
-        <table id="tabela-aluguel">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Modelo</th>
-                    <th>Placa</th>
-                    <th>Status</th>
-                    <th>KM Atual</th>
-                </tr>
-            </thead>
-            <tbody id="corpo-tabela-aluguel">
-            </tbody>
-        </table>
-    </section>
+        <div class="painel">
+            <h2>Veículos para Alugar</h2>
+            <table id="tabela-aluguel">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Modelo</th>
+                        <th>Placa</th>
+                        <th>Status</th>
+                        <th>KM Atual</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="corpo-tabela-aluguel">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
-
-<script src="script.js"></script>
 </html>

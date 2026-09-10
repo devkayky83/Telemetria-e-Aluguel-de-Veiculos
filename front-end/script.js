@@ -23,6 +23,14 @@ async function carregarVeiculos() {
   }
 }
 
+function classeBadge(status) {
+  const chave = status.toLowerCase();
+  if (chave === "disponível") return "badge-disponivel";
+  if (chave === "alugado") return "badge-alugado";
+  if (chave === "manutenção") return "badge-manutencao";
+  return "";
+}
+
 function renderListaSimples(seletorTbody, veiculos) {
   const corpoTabela = document.querySelector(seletorTbody);
   corpoTabela.innerHTML = "";
@@ -35,10 +43,22 @@ function renderListaSimples(seletorTbody, veiculos) {
       <td>${veiculo.id}</td>
       <td>${veiculo.modelo}</td>
       <td>${veiculo.placa}</td>
-      <td>${veiculo.status}</td>
+      <td><span class="badge ${classeBadge(veiculo.status)}">${veiculo.status}</span></td>      
       <td>${veiculo.quilometragem_atual}</td>
     `;
     corpoTabela.appendChild(linha);
+  });
+}
+
+function formatarData(isoString){
+  const data = new Date(isoString);
+  return data.toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
   });
 }
 
@@ -47,11 +67,14 @@ async function carregarTelemetria() {
   const corpoTabela = document.querySelector("#corpo-tabela-telemetria");
 
   if (!modelo) {
-    corpoTabela.innerHTML = "<tr><td colspan='6'>Digite o modelo do veículo</td></tr>";
+    corpoTabela.innerHTML =
+      "<tr><td colspan='6'>Digite o modelo do veículo</td></tr>";
     return;
   }
 
-  const resposta = await fetch(`${API_URL}/telemetria?modelo=${encodeURIComponent(modelo)}`);
+  const resposta = await fetch(
+    `${API_URL}/telemetria?modelo=${encodeURIComponent(modelo)}`,
+  );
   const dados = await resposta.json();
 
   corpoTabela.innerHTML = "";
@@ -66,10 +89,10 @@ async function carregarTelemetria() {
     linha.innerHTML = `
       <td>${telemetria.id}</td>
       <td>Veículo #${telemetria.veiculo_id}</td>
-      <td>${telemetria.latitude}</td>
-      <td>${telemetria.longitude}</td>
-      <td>${telemetria.quilometragem}</td>
-      <td>${telemetria.registrado_em}</td>
+      <td>${telemetria.latitude.toFixed(5)}</td>
+      <td>${telemetria.longitude.toFixed(5)}</td>
+      <td>${telemetria.quilometragem.toFixed(2)} km</td>
+      <td>${formatarData(telemetria.registrado_em)}</td>
     `;
     corpoTabela.appendChild(linha);
   });
@@ -96,7 +119,10 @@ function filtrarVeiculos() {
 }
 
 function filtrarVeiculosAlugados() {
-  const filtro = document.querySelector("#input-modelo").value.trim().toLowerCase();
+  const filtro = document
+    .querySelector("#input-modelo")
+    .value.trim()
+    .toLowerCase();
   const tbody = document.querySelector("#corpo-tabela-alugados");
   const veiculosAlugados = veiculosCache.filter((veiculo) => {
     const modelo = (veiculo.modelo || "").toLowerCase();
@@ -107,7 +133,8 @@ function filtrarVeiculosAlugados() {
   tbody.innerHTML = "";
 
   if (veiculosAlugados.length === 0) {
-    tbody.innerHTML = "<tr><td colspan='6'>Nenhum veículo alugado encontrado</td></tr>";
+    tbody.innerHTML =
+      "<tr><td colspan='6'>Nenhum veículo alugado encontrado</td></tr>";
     return;
   }
 
@@ -117,9 +144,9 @@ function filtrarVeiculosAlugados() {
       <td>${veiculo.id}</td>
       <td>${veiculo.modelo}</td>
       <td>${veiculo.placa}</td>
-      <td>${veiculo.status}</td>
+      <td><span class="badge ${classeBadge(veiculo.status)}">${veiculo.status}</span></td>
       <td>${veiculo.quilometragem_atual}</td>
-      <td><button onclick="devolverVeiculo(${veiculo.id})">Devolver</button></td>
+      <td><button class="btn btn-secundario" onclick="devolverVeiculo(${veiculo.id})">Devolver</button></td>
     `;
     tbody.appendChild(linha);
   });
@@ -141,7 +168,9 @@ async function devolverVeiculo(veiculoId) {
     const veiculo = await resposta.json();
     alert(`Veículo ${veiculo.modelo} devolvido com sucesso!`);
 
-    veiculosCache = veiculosCache.map((item) => (item.id === veiculo.id ? veiculo : item));
+    veiculosCache = veiculosCache.map((item) =>
+      item.id === veiculo.id ? veiculo : item,
+    );
     filtrarVeiculosAlugados();
   } catch (error) {
     alert(error.message);
@@ -149,7 +178,8 @@ async function devolverVeiculo(veiculoId) {
 }
 
 function filtroAluguel() {
-  const filtro = document.querySelector("#input-modelo")?.value.toLowerCase() || "";
+  const filtro =
+    document.querySelector("#input-modelo")?.value.toLowerCase() || "";
   const statusDesejado = "disponível";
 
   return veiculosCache.filter((veiculo) => {
@@ -165,7 +195,8 @@ function renderAluguel() {
   tbody.innerHTML = "";
 
   if (veiculos.length === 0) {
-    tbody.innerHTML = "<tr><td colspan='5'>Nenhum veículo disponível para alugar</td></tr>";
+    tbody.innerHTML =
+      "<tr><td colspan='5'>Nenhum veículo disponível para alugar</td></tr>";
     return;
   }
 
@@ -175,9 +206,9 @@ function renderAluguel() {
       <td>${veiculo.id}</td>
       <td>${veiculo.modelo}</td>
       <td>${veiculo.placa}</td>
-      <td>${veiculo.status}</td>
+      <td><span class="badge ${classeBadge(veiculo.status)}">${veiculo.status}</span></td>
       <td>${veiculo.quilometragem_atual}</td>
-      <td><button onclick="alugarVeiculo(${veiculo.id})">Alugar</button></td>
+      <td><button class="btn" onclick="alugarVeiculo(${veiculo.id})">Alugar</button></td>
     `;
     tbody.appendChild(linha);
   });
@@ -239,7 +270,9 @@ if (
 }
 
 if (document.querySelector("#tabela-telemetria")) {
-  document.querySelector("#input-veiculo").addEventListener("keydown", (evento) => {
-    if (evento.key === "Enter") carregarTelemetria();
-  });
+  document
+    .querySelector("#input-veiculo")
+    .addEventListener("keydown", (evento) => {
+      if (evento.key === "Enter") carregarTelemetria();
+    });
 }
