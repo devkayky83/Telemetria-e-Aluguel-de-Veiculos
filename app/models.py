@@ -11,6 +11,7 @@ class Veiculo(Base):
     status = Column(String, default="disponível")
     hora_inicio_aluguel = Column(DateTime, nullable=True)
     quilometragem_atual = Column(Float, default=0.0)
+    quilometragem_ultima_manutencao = Column(Float, default=0.0)
     
     telemetrias = relationship("Telemetria", back_populates="veiculo")
     
