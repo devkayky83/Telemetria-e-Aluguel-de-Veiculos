@@ -18,6 +18,8 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+LIMITE_KM_MANUTENCAO = 10000
+
 @app.get("/")
 def read_root():
     return {"status": "API no ar"}
@@ -124,9 +126,33 @@ def devolver_veiculo(devolucao: schemas.DevolucaoVeiculo, db: Session = Depends(
     if veiculo.status.lower() != "alugado":
         raise HTTPException(status_code=400, detail="Este veículo não está alugado")
     
-    veiculo.status = "disponível"
+    km_desde_manutencao = veiculo.quilometragem_atual - veiculo.quilometragem_ultima_manutencao
+    
+    if km_desde_manutencao >= LIMITE_KM_MANUTENCAO:
+        veiculo.status = "manutenção"
+    else: 
+        veiculo.status = "disponível"
+    
     veiculo.hora_inicio_aluguel = None
 
+    db.commit()
+    db.refresh(veiculo)
+    return veiculo
+
+
+@app.post("/veiculos/{veiculo_id}/manutencao/finalizar", response_model=schemas.VeiculoOut)
+def finalizar_manutencao(veiculo_id: int, db: Session = Depends(get_db)):
+    veiculo = db.query(models.Veiculo).filter(models.Veiculo.id == veiculo_id).first()
+    
+    if not veiculo:
+        raise HTTPException(status_code=404, detail="Veículo não encontrado")
+    
+    if veiculo.status.lower() != "manutenção":
+        raise HTTPException(status_code=400, detail="Este veículo não está em manutenção")
+    
+    veiculo.status = "disponível"
+    veiculo.quilometragem_ultima_manutencao = veiculo.quilometragem_atual
+    
     db.commit()
     db.refresh(veiculo)
     return veiculo
